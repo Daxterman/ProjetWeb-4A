@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded',async function() {
       document.querySelectorAll('.episode').forEach(
         episode => {
           episode.addEventListener('click', () => {
-            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i]);
+            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i].id);
             i = (i+1)%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
             t_restant = 29; 
@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded',async function() {
             EmbedController.togglePlay();
             $("#next").prop('disabled',true);
             $("#pause").prop('disabled',false);
+            $(".answer").html("");
   
             pause=false;
             f=setInterval(interval,1000);
@@ -84,7 +85,7 @@ function reveal()
   let nom = "<h5><b>"+tab[i-1].name+"</b></h5>"
   let html = img + nom + "<p>";
   tab[i-1].artist.forEach(element =>{
-    html = html + element;
+    html = html + element + "</br>";
 
   });
   html = html + "</p>";
