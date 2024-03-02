@@ -1,5 +1,4 @@
 require('dotenv').config();
-const fs = require("fs");
 var express = require('express');
 var app = express();
 
