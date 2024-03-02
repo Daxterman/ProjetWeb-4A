@@ -51,7 +51,6 @@
 .status
 {
     width: 50%;
-    height: 3.5%;
     margin-left: auto;
     margin-right: auto;
     display: inline;
@@ -72,6 +71,9 @@ h1 {
     height: 240px;
     width: 100%;
     overflow: hidden;
+    color:white;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .answer img
@@ -82,4 +84,9 @@ h1 {
     height: 240px;
     float: left;
     margin-right: 10px;
+}
+
+.row.admin
+{
+    margin-top: 15px;
 }

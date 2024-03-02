@@ -1,6 +1,5 @@
 require('dotenv').config();
 const fs = require("fs");
-var request = require('request');
 var express = require('express');
 var app = express();
 
@@ -29,46 +28,44 @@ const authOptions = {
 
 async function playlist(token,id)
 {
-    const response = await fetch('https://api.spotify.com/v1/playlists/'+id+"/tracks", {
+    const  response = await fetch('https://api.spotify.com/v1/playlists/'+id+"/tracks", {
     headers: {
       Authorization: 'Bearer ' + token
     }
   });
 
   const data = await response.json();
-  console.log(data);
-  fs.writeFile('reponse.json', JSON.stringify(data, null, 2), (err) => {
-    if (err) throw err;
-    console.log('La réponse a été écrite dans le fichier reponse.json');
+
+  var tab = [];
+  data.items.forEach(element => {
+    let artists = [];
+    element.track.artists.forEach(ele => {artists.push(ele.name);});
+  
+    tab.push(
+      {
+        "name": element.track.name,
+        "img" : element.track.album.images[0].url,
+        "id": element.track.id,
+        "artist" : artists,
+        "year" : element.track.album.release_date
+      }
+    );
   });
+  const shuffle = tab.sort((a, b) => 0.5 - Math.random());
+  
+  return shuffle;
 }
 
-fetch("https://accounts.spotify.com/api/token",authOptions).then(resp => resp.json()).then(json => console.log(json))
 
-
-const temp = JSON.parse(fs.readFileSync("./reponse.json"));
-
-var tab = [];
-
-temp.items.forEach(element => {
-  let artists = [];
-  element.track.artists.forEach(ele => {artists.push(ele.name);});
-
-  tab.push(
-    {
-      "name": element.track.name,
-      "img" : element.track.album.images[0].url,
-      "id": element.track.id,
-      "artist" : artists
-    }
-  );
-});
+fetch("https://accounts.spotify.com/api/token",authOptions).then(resp => resp.json()).then(json => token = json.access_token);
 
 
 
-app.get("/",function(req,res){
-  const shuffle = tab.sort((a, b) => 0.5 - Math.random());
-  res.json(shuffle);
+
+app.get("/:id",function(req,res){
+  const id = req.params.id;
+  if (!id){id ="37i9dQZF1DWWl7MndYYxge";};
+  playlist(token,id).then(shuffle => res.json(shuffle));
 })
 
 
