@@ -7,7 +7,9 @@ var f = null;
 
 document.addEventListener('DOMContentLoaded',async function() {
   // Votre fonction à exécuter au chargement de la page
-  id = "37i9dQZF1DWWl7MndYYxge";
+  id = sessionStorage.getItem("Playlist");
+  if(!id){id = id = "37i9dQZF1DWWl7MndYYxge";};
+  
   res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
   tab =  await res.json();
 
@@ -63,6 +65,17 @@ $("#reveal").on("click",click => {
   reveal();
 });
 
+$("#refresh").on("click",click => {
+  refresh();
+})
+
+$("#clear").on("click",click => {
+  sessionStorage.removeItem("Playlist");
+  location.reload(true);
+})
+
+;
+
 
 $("#skip").on("click",click => {
   t_restant = 0;
@@ -108,4 +121,10 @@ function reveal()
   });
   html = html + "</p>";
   $(".answer").html(html);
+}
+
+function refresh()
+{
+  sessionStorage.setItem('Playlist', $("#form").val());
+  location.reload(true);
 }

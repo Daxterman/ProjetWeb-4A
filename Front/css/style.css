@@ -76,6 +76,12 @@ h1 {
     margin-bottom: 15px;
 }
 
+label
+{
+    color:white;
+   
+}
+
 .answer img
 {
     max-height: 240px;

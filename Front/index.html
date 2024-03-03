@@ -24,10 +24,10 @@
   </div>
   <div class="row admin">
   <div class="col">
-  <button class="reveal btn bs w-100" id="reveal" data-spotify-id="spotify:track:04aAxqtGp5pv12UXAg4pkq">Reveal</button>
+  <button class="reveal btn bs w-100" id="reveal">Reveal</button>
 </div>
 <div class="col">
-  <button class="skip btn bs w-100" id="skip" data-spotify-id="spotify:track:04aAxqtGp5pv12UXAg4pkq">Skip</button>
+  <button class="skip btn bs w-100" id="skip">Skip</button>
 </div>
 </div>
 </div>
@@ -37,8 +37,10 @@
 
 
 
-
-
+<label for="form">ID playlist :</label>
+<input type="text" id="form" name="form">
+<button class="refresh btn bs " id="refresh" >Refresh</button>
+<button class="clear btn bs " id="clear" >clear</button>
   <script src="https://open.spotify.com/embed/iframe-api/v1" async>
   </script>
   <script src="./js/Lecteur.js"></script>
