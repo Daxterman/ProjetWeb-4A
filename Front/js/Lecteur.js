@@ -8,7 +8,7 @@ var f = null;
 document.addEventListener('DOMContentLoaded',async function() {
   // Votre fonction à exécuter au chargement de la page
   id = "37i9dQZF1DWWl7MndYYxge";
-  res =  await fetch("http://localhost:8080/"+id);
+  res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev//"+id);
   tab =  await res.json();
 
 

@@ -6,6 +6,7 @@ var client_id = process.env.ClientID;
 var client_secret = process.env.SecretID;
 var token = '';
 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -34,8 +35,8 @@ async function playlist(token,id)
   });
 
   const data = await response.json();
-
   var tab = [];
+  if (data.items === undefined){return null;}
   data.items.forEach(element => {
     let artists = [];
     element.track.artists.forEach(ele => {artists.push(ele.name);});
@@ -62,6 +63,7 @@ fetch("https://accounts.spotify.com/api/token",authOptions).then(resp => resp.js
 
 
 app.get("/:id",function(req,res){
+  console.log("Url: "+ req.originalUrl);
   const id = req.params.id;
   if (!id){id ="37i9dQZF1DWWl7MndYYxge";};
   playlist(token,id).then(shuffle => res.json(shuffle));
