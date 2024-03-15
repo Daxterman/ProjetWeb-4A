@@ -54,9 +54,31 @@ document.addEventListener('DOMContentLoaded',async function() {
         })
       };
     IFrameAPI.createController(element, options, callback);
-  
-  
+
   };
+
+  const socket = io('http://localhost:3000');
+
+  // Rejoindre la room 'lecteurs' dès que la connexion est établie
+  socket.on('connect', () => {
+  console.log('Connected to server');
+  socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
+  });
+
+  // Écoute de l'événement 'PauseBuzzer' du serveur
+  socket.on('PauseBuzzer', () => {
+  console.log('Received triggerClick from the server');
+    
+  // Déclenche le clic sur le bouton "pause"
+  const pauseButton = document.getElementById('pause');
+  if (pauseButton) {
+
+    pauseButton.click();
+  } else {
+    console.error('Pause button not found');
+  }
+  });
+
 });
 
 function interval()

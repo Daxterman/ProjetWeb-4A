@@ -1,6 +1,8 @@
 require('dotenv').config();
 const fs = require("fs");
 var express = require('express');
+const http = require('http');
+const socketIO = require('socket.io');
 var app = express();
 
 var client_id = process.env.ClientID;
@@ -14,6 +16,13 @@ const cors = require('cors');
 app.use(cors({
   origin: '*'
 }));
+
+const server = http.createServer(app);
+const io = socketIO(server, {
+  cors: {
+    origin: '*',
+  }
+});
 
 const authOptions = {
   method: 'POST',
@@ -70,6 +79,33 @@ app.get("/",function(req,res){
   res.json(shuffle);
 })
 
+io.on('connection', (socket) => {
+  console.log('Client connected');
+
+  socket.on('buzz', (data) => {
+    // Récupérer l'ID de session de l'utilisateur
+    const sessionId = data.sessionId;
+
+    console.log('Received buzz event from session:', sessionId);
+
+    // Émission d'un événement "PauseBuzzer" vers la room 'lecteur'
+    io.to('lecteur').emit('PauseBuzzer');
+  });
+
+  socket.on('disconnect', () => {
+    console.log('Client disconnected');
+  });
+
+   // Gestion de la demande de rejoindre une room
+   socket.on('joinRoom', (room) => {
+    console.log(`Client joined room ${room}`);
+    socket.join(room); // Rejoindre la room spécifiée
+  });
+});
 
 app.listen(8080);
 console.log("App listening on port 8080...");
+
+server.listen(3000, () => {
+  console.log('Server listening on port 3000');
+});
