@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded',async function() {
       document.querySelectorAll('.episode').forEach(
         episode => {
           episode.addEventListener('click', () => {
-            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i].id);
+            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i]);
             i = (i+1)%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
             t_restant = 29; 
@@ -57,9 +57,31 @@ document.addEventListener('DOMContentLoaded',async function() {
         })
       };
     IFrameAPI.createController(element, options, callback);
-  
-  
+
   };
+
+  const socket = io('http://localhost:3000');
+
+  // Rejoindre la room 'lecteurs' dès que la connexion est établie
+  socket.on('connect', () => {
+  console.log('Connected to server');
+  socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
+  });
+
+  // Écoute de l'événement 'PauseBuzzer' du serveur
+  socket.on('PauseBuzzer', () => {
+  console.log('Received triggerClick from the server');
+    
+  // Déclenche le clic sur le bouton "pause"
+  const pauseButton = document.getElementById('pause');
+  if (pauseButton) {
+
+    pauseButton.click();
+  } else {
+    console.error('Pause button not found');
+  }
+  });
+
 
 $("#reveal").on("click",click => {
   reveal();
