@@ -25,7 +25,7 @@ class Game {
         })
         if(idx != -1)
         {
-            this.Players.splice(idx,idx)
+            this.Players.splice(idx,1)
         }
         
     }
