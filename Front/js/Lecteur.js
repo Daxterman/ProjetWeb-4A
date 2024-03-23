@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded',async function() {
         episode => {
           episode.addEventListener('click', () => {
             socket.emit('NextFromLecteur');
-            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i]);
+            episode.setAttribute("data-spotify-id","spotify:track:"+tab[i].id);
             i = (i+1)%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
             t_restant = 29; 
@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded',async function() {
             EmbedController.togglePlay();
             $("#next").prop('disabled',true);
             $("#pause").prop('disabled',false);
+            $("#ajout1Point").prop('disabled',true);
+            $("#ajout2Points").prop('disabled',true);
             $(".answer").html("");
             pause=false;
             f=setInterval(interval,1000);
@@ -67,6 +69,15 @@ document.addEventListener('DOMContentLoaded',async function() {
             }
           });
         })
+
+        document.getElementById('ajout1Point').addEventListener('click', () => {
+          ajouterPoints(socket, 1);
+      });
+
+      document.getElementById('ajout2Points').addEventListener('click', () => {
+        ajouterPoints(socket, 2);
+    });
+
       };
     IFrameAPI.createController(element, options, callback);
 
@@ -74,11 +85,11 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   socket.on('connect', () => {
   console.log('Lecteur connecté au server');
-  //socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
+  socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
   });
 
   // Écoute de l'événement 'PauseBuzzer' du serveur
-  socket.on('PauseBuzzer', () => {
+  socket.on('PauseBuzzer', (data) => {
   console.log('Received PauseBuzzer from the server');
     
   // Déclenche le clic sur le bouton "pause"
@@ -89,7 +100,23 @@ document.addEventListener('DOMContentLoaded',async function() {
   } else {
     console.error('Pause button not found');
   }
+
+  $("#ajout1Point").prop('disabled',false);
+
+  if(data.pointsToAttributeToPlayer == 2)
+  {
+    $("#ajout2Points").prop('disabled',false);
+  }
+  
+  
+
   });
+
+  socket.on('Skip', () => {
+   
+    $("#skip").click();
+    });
+
 
 
 $("#reveal").on("click",click => {
@@ -158,4 +185,13 @@ function refresh()
 {
   sessionStorage.setItem('Playlist', $("#form").val());
   location.reload(true);
+}
+
+function ajouterPoints(socket, nbpoints)
+{
+  socket.emit('ajouterPoints', {nbpoints : nbpoints});
+  
+  $("#ajout1Point").prop('disabled',true);
+  $("#ajout2Points").prop('disabled',true);
+  
 }
