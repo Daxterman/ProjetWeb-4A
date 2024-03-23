@@ -89,7 +89,26 @@ io.on('connection', (socket) => {
     console.log('Received buzz event from session:', sessionId);
 
     // Émission d'un événement "PauseBuzzer" vers la room 'lecteur'
-    io.to('lecteur').emit('PauseBuzzer');
+    //io.to('lecteur').emit('PauseBuzzer');
+    io.emit('PauseBuzzer');
+  });
+
+  socket.on('PauseFromLecteur', () => {
+    // Récupérer l'ID de session de l'utilisateur
+
+    console.log('Received pause instruction from lecteur');
+
+    // Émission d'un événement "PauseFromLecteur" vers la room 'clients'
+    io.to('clients').emit('PauseFromLecteur');
+  });
+
+  socket.on('NextFromLecteur', () => {
+    // Récupérer l'ID de session de l'utilisateur
+
+    console.log('Received next instruction from lecteur');
+
+    // Émission d'un événement "PauseFromLecteur" vers la room 'clients'
+    io.to('clients').emit('NextFromLecteur');
   });
 
   socket.on('disconnect', () => {

@@ -179,3 +179,11 @@ label
 {
     margin-top: 15px;
 }
+
+.pushable.sans-animations *,
+.pushable.sans-animations,
+.pushable.sans-animations:hover,
+.pushable.sans-animations:hover .front,
+.pushable.sans-animations:hover .shadow {
+  transition: none !important;
+}

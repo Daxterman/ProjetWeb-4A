@@ -3,6 +3,7 @@ var i = 0;
 var pause = true;
 var t_restant = 29;
 var f = null;
+var buzzClick = false;
 
 
 document.addEventListener('DOMContentLoaded',async function() {
@@ -10,10 +11,11 @@ document.addEventListener('DOMContentLoaded',async function() {
   id = sessionStorage.getItem("Playlist");
   if(!id){id = id = "37i9dQZF1DWWl7MndYYxge";};
   
-  res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
+  //res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
+  res =  await fetch("http://localhost:3000/"+id);
   tab =  await res.json();
 
-
+  const socket = io('http://localhost:3000');
 
   window.onSpotifyIframeApiReady = (IFrameAPI) => {
     const element = document.getElementById('embed-iframe');
@@ -26,6 +28,7 @@ document.addEventListener('DOMContentLoaded',async function() {
       document.querySelectorAll('.episode').forEach(
         episode => {
           episode.addEventListener('click', () => {
+            socket.emit('NextFromLecteur');
             episode.setAttribute("data-spotify-id","spotify:track:"+tab[i]);
             i = (i+1)%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
@@ -43,6 +46,15 @@ document.addEventListener('DOMContentLoaded',async function() {
         document.querySelectorAll('.pause').forEach(
         episode => {
           episode.addEventListener('click', () => {
+            if(!buzzClick)
+            {
+              socket.emit('PauseFromLecteur');
+            }
+            else
+            {
+              buzzClick = false;
+            }
+            
             EmbedController.togglePlay();
             pause = !pause;
             if(pause == true)
@@ -60,22 +72,19 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   };
 
-  const socket = io('http://localhost:3000');
-
-  // Rejoindre la room 'lecteurs' dès que la connexion est établie
   socket.on('connect', () => {
-  console.log('Connected to server');
-  socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
+  console.log('Lecteur connecté au server');
+  //socket.emit('joinRoom', 'lecteur'); // Demande de rejoindre la room 'lecteur'
   });
 
   // Écoute de l'événement 'PauseBuzzer' du serveur
   socket.on('PauseBuzzer', () => {
-  console.log('Received triggerClick from the server');
+  console.log('Received PauseBuzzer from the server');
     
   // Déclenche le clic sur le bouton "pause"
   const pauseButton = document.getElementById('pause');
   if (pauseButton) {
-
+    buzzClick = true;
     pauseButton.click();
   } else {
     console.error('Pause button not found');
