@@ -5,24 +5,13 @@ class Player {
         this.id = ID_game;
         this.session = ID_session
         this.name = name
-        this.score = 0
+        this.nb_points = 0
     }
 
-    reset()
+    getPlayerPoints()
     {
-        this.score=0;
+        return this.nb_points;
     }
-
-    add()
-    {
-        this.score +=1;
-    }
-
-
-    sub()
-    {
-        this.score -=1;
-    }
-
-
 }
+
+module.exports = Player;

@@ -3,11 +3,13 @@ require('dotenv').config();
 var express = require('express');
 const http = require('http');
 const socketIO = require('socket.io');
+const Game = require('./Classes/Game');
 var app = express();
 
 var client_id = process.env.ClientID;
 var client_secret = process.env.SecretID;
 var token = '';
+var sessionIdPlayerBuzz;
 
 
 app.use(express.json());
@@ -79,17 +81,40 @@ app.get("/:id",function(req,res){
   playlist(token,id).then(shuffle => res.json(shuffle));
 })
 
+//Créer Game
+const myGame = new Game(1);
+
 io.on('connection', (socket) => {
   console.log('Client connected');
 
   socket.on('buzz', (data) => {
     // Récupérer l'ID de session de l'utilisateur
-    const sessionId = data.sessionId;
+    sessionIdPlayerBuzz = data.sessionId;
 
-    console.log('Received buzz event from session:', sessionId);
+    console.log('Received buzz event from session:', sessionIdPlayerBuzz);
 
-    // Émission d'un événement "PauseBuzzer" vers la room 'lecteur'
-    io.to('lecteur').emit('PauseBuzzer');
+    const roundPoints = myGame.getRoundPoints();
+    const pointsToAttributeToPlayer = 2-roundPoints;
+
+    io.to('lecteur').emit('PauseBuzzer', {pointsToAttributeToPlayer : pointsToAttributeToPlayer});
+    io.to('clients').emit('PauseBuzzer');
+  });
+
+  socket.on('PauseFromLecteur', () => {
+    // Récupérer l'ID de session de l'utilisateur
+
+    console.log('Received pause instruction from lecteur');
+
+    // Émission d'un événement "PauseFromLecteur" vers la room 'clients'
+    io.to('clients').emit('PauseFromLecteur');
+  });
+
+  socket.on('NextFromLecteur', () => {
+
+    console.log('Received next instruction from lecteur');
+    myGame.resetRoundPoints();
+    // Émission d'un événement "PauseFromLecteur" vers la room 'clients'
+    io.to('clients').emit('NextFromLecteur');
   });
 
   socket.on('disconnect', () => {
@@ -101,6 +126,25 @@ io.on('connection', (socket) => {
     console.log(`Client joined room ${room}`);
     socket.join(room); // Rejoindre la room spécifiée
   });
+
+  //Un joueur envoie ses infos
+  socket.on('infos_joueur', (data) => {
+    myGame.add_player(data.name,data.sessionId);
+    console.log(myGame);
+  })
+
+  //Demande d'ajout de points
+  socket.on('ajouterPoints', (data) => {
+    myGame.addPointsToPlayer(sessionIdPlayerBuzz,data.nbpoints);
+    myGame.addRoundPoints(data.nbpoints);
+    console.log(myGame);
+
+    if(myGame.getRoundPoints() == 2)
+    {
+      io.to('lecteur').emit('Skip');
+    }
+  })
+
 });
 
 app.listen(8080);

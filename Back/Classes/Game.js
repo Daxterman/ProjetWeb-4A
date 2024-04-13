@@ -1,5 +1,4 @@
-import "./Player"
-
+const Player = require('./Player');
 
 class Game {
 
@@ -7,11 +6,18 @@ class Game {
     {
         this.id = ID;
         this.Players = []
+        this.nb_points_round = 0;
     }
 
     add_player(name,session)
     {
-        this.Players.push(new Player(this.id,session,name))
+        // Vérifier si un joueur avec le même ID de session existe déjà
+        const existingPlayer = this.Players.find(player => player.session === session);
+
+        // Si aucun joueur avec le même ID de session n'est trouvé, ajouter un nouveau joueur
+        if (!existingPlayer) {
+            this.Players.push(new Player(this.id, session, name));
+        }
     }
 
     remove_player(session)
@@ -30,7 +36,37 @@ class Game {
         
     }
 
+    addPointsToPlayer(sessionID, nbpoints) {
+        const player = this.Players.find(player => player.session === sessionID);
+        if (player) {
+            player.nb_points+=nbpoints;
+            
+        }
+    }
 
+    addRoundPoints(nb_points)
+    {
+        this.nb_points_round+=nb_points;
+    }
 
+    getRoundPoints()
+    {
+        return this.nb_points_round;
+    }
 
+    resetRoundPoints()
+    {
+        this.nb_points_round = 0;
+    }
+
+    getPointsFromPlayer(sessionID)
+    {
+        const player = this.Players.find(player => player.session === sessionID);
+        if (player) {
+            return player.getPlayerPoints();
+            
+        }
+    }
 }
+
+module.exports = Game;
