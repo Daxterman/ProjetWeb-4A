@@ -12,10 +12,14 @@ document.addEventListener('DOMContentLoaded',async function() {
   if(!id){id = id = "37i9dQZF1DWWl7MndYYxge";};
   
   //res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
-  res =  await fetch("http://localhost:3000/"+id);
+  res =  await fetch("/api/"+id);
   tab =  await res.json();
+  if (tab[0] === null)
+  {
+    window.location.href = '/';
+  }
 
-  const socket = io('http://localhost:3000');
+  const socket = io(':3000/');
 
   window.onSpotifyIframeApiReady = (IFrameAPI) => {
     const element = document.getElementById('embed-iframe');
@@ -76,6 +80,7 @@ document.addEventListener('DOMContentLoaded',async function() {
 
       document.getElementById('ajout2Points').addEventListener('click', () => {
         ajouterPoints(socket, 2);
+
     });
 
       };
@@ -91,7 +96,8 @@ document.addEventListener('DOMContentLoaded',async function() {
   // Écoute de l'événement 'PauseBuzzer' du serveur
   socket.on('PauseBuzzer', (data) => {
   console.log('Received PauseBuzzer from the server');
-    
+  console.log("pseudo :" + data.PlayerName);
+  $("#pseudo").html(data.PlayerName);
   // Déclenche le clic sur le bouton "pause"
   const pauseButton = document.getElementById('pause');
   if (pauseButton) {
@@ -100,14 +106,13 @@ document.addEventListener('DOMContentLoaded',async function() {
   } else {
     console.error('Pause button not found');
   }
-
-  $("#ajout1Point").prop('disabled',false);
+  $(".ajout1Point").prop('disabled',false);
 
   if(data.pointsToAttributeToPlayer == 2)
   {
-    $("#ajout2Points").prop('disabled',false);
+    $(".ajout2Points").prop('disabled',false);
   }
-  
+  $("#ping").css("display",'block');
   
 
   });
@@ -117,6 +122,20 @@ document.addEventListener('DOMContentLoaded',async function() {
     $("#skip").click();
     });
 
+  socket.on("score",data =>
+{
+  $.each(data, function(index, objet) {
+    const row = $('<tr>');
+
+    // Insérer le nom dans la première cellule
+    $('<td>').text(objet.name).appendTo(row);
+
+    // Insérer les points dans la deuxième cellule
+    $('<td>').text(objet.points.toString()).appendTo(row);
+
+    // Ajouter la ligne à tbody
+    row.appendTo('#score tbody');
+});})
 
 
 $("#reveal").on("click",click => {
@@ -141,7 +160,10 @@ $("#skip").on("click",click => {
   $('#progress').attr("style","width: " +percent).attr('aria-valuenow', percent).html("<b>"+t_restant+"</b>");
   clearInterval(f);
   $('#progess').html("");
-  document.getElementById("pause").click();
+  if (!pause)
+  {
+    document.getElementById("pause").click();
+  }
   $("#pause").prop('disabled',true);
   $("#next").prop('disabled',false);
   reveal();
@@ -189,9 +211,11 @@ function refresh()
 
 function ajouterPoints(socket, nbpoints)
 {
+
   socket.emit('ajouterPoints', {nbpoints : nbpoints});
-  
   $("#ajout1Point").prop('disabled',true);
   $("#ajout2Points").prop('disabled',true);
+  $("#ping").css("display",'none');
+
   
 }

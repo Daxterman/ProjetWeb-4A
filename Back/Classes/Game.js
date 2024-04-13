@@ -67,6 +67,15 @@ class Game {
             
         }
     }
+
+    getPlayerName(sessionID)
+    {
+        const player = this.Players.find(player => player.session === sessionID);
+        if (player) {
+            return player.name;
+            
+        }  
+    }
 }
 
 module.exports = Game;
