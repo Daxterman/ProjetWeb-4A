@@ -177,6 +177,7 @@ function Score()
 
 
   })
+  score.sort((a,b) => b.points - a.points)
   io.emit("score",score);
 }
 

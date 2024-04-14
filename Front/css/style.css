@@ -119,7 +119,7 @@ label
     margin-right: 10px;
 }
 
-#ping
+#ping, #fin
 {
   display: none;
 }

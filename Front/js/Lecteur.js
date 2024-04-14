@@ -4,6 +4,7 @@ var pause = true;
 var t_restant = 29;
 var f = null;
 var buzzClick = false;
+var score = null;
 
 
 document.addEventListener('DOMContentLoaded',async function() {
@@ -11,7 +12,6 @@ document.addEventListener('DOMContentLoaded',async function() {
   id = sessionStorage.getItem("Playlist");
   if(!id){id = id = "37i9dQZF1DWWl7MndYYxge";};
   
-  //res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
   res =  await fetch("/api/"+id);
   tab =  await res.json();
   if (tab[0] === null)
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded',async function() {
           episode.addEventListener('click', () => {
             socket.emit('NextFromLecteur');
             episode.setAttribute("data-spotify-id","spotify:track:"+tab[i].id);
-            i = (i+1)%tab.length;
+            i = (i+1);//%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
             t_restant = 29; 
             $('#progress').attr("style","width: " +0).attr('aria-valuenow', 0);
@@ -124,6 +124,8 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   socket.on("score",data =>
 {
+  $('#score tbody').empty();
+  score = data
   $.each(data, function(index, objet) {
     const row = $('<tr>');
 
@@ -219,3 +221,10 @@ function ajouterPoints(socket, nbpoints)
 
   
 }
+
+/*function fin()
+{
+  $("#fin").css("display",'block');
+  $("#gagnant").html(data.PlayerName);
+  confetti();
+}*/

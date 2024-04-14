@@ -75,6 +75,7 @@ const name = sessionStorage.getItem("name")
 
     socket.on("score",data =>
 {
+  $('#score tbody').empty();
   $.each(data, function(index, objet) {
     const row = $('<tr>');
 
