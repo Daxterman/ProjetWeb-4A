@@ -7,6 +7,7 @@ const Game = require('./Classes/Game');
 const path = require('path');
 var app = express();
 
+
 var client_id = process.env.ClientID;
 var client_secret = process.env.SecretID;
 var token = '';
@@ -15,6 +16,8 @@ var sessionIdPlayerBuzz;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
 
 const cors = require('cors');
 app.use(cors({
