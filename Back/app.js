@@ -150,6 +150,7 @@ io.on('connection', (socket) => {
   socket.on('infos_joueur', (data) => {
     myGame.add_player(data.name,data.sessionId);
     console.log(myGame);
+    Score()
   })
 
   //Demande d'ajout de points
