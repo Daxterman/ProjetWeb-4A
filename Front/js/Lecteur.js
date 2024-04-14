@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded',async function() {
             $(".answer").html("");
             pause=false;
             f=setInterval(interval,1000);
+            reveal();
           });
         });
         document.querySelectorAll('.pause').forEach(
@@ -95,6 +96,7 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   // Écoute de l'événement 'PauseBuzzer' du serveur
   socket.on('PauseBuzzer', (data) => {
+  $('#buzzPlayer')[0].play();
   console.log('Received PauseBuzzer from the server');
   console.log("pseudo :" + data.PlayerName);
   $("#pseudo").html(data.PlayerName);
@@ -169,7 +171,19 @@ $("#skip").on("click",click => {
   $("#pause").prop('disabled',true);
   $("#next").prop('disabled',false);
   reveal();
+  if (i == tab.length)
+  {
+    fin();  
+  }
 })
+
+$(".overlay").on("click",click => {
+  $("#ping").css("display",'none');
+  $("#fin").css("display",'none');
+
+
+})
+
 });
 
 function interval()
@@ -187,6 +201,10 @@ function interval()
       $("#pause").prop('disabled',true);
       $("#next").prop('disabled',false);
       reveal();
+      if (i == tab.length)
+      {
+        fin();  
+      }
     }
   }
 }
@@ -222,9 +240,41 @@ function ajouterPoints(socket, nbpoints)
   
 }
 
-/*function fin()
+function fin()
 {
   $("#fin").css("display",'block');
-  $("#gagnant").html(data.PlayerName);
-  confetti();
-}*/
+  $("#gagnant").html(score[0].name);
+  if (typeof confetti !== 'undefined') {
+    // Utilisez la fonction confetti()
+    launch();
+    $('#finalPlayer')[0].play();
+
+  } else {
+    console.error('La bibliothèque canvas-confetti n\'est pas chargée.');
+  }
+}
+
+function launch()
+{
+  var duration = 15 * 1000;
+var animationEnd = Date.now() + duration;
+var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+var interval = setInterval(function() {
+  var timeLeft = animationEnd - Date.now();
+
+  if (timeLeft <= 0) {
+    return clearInterval(interval);
+  }
+
+  var particleCount = 50 * (timeLeft / duration);
+  // since particles fall down, start a bit higher than random
+  confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+  confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+}, 250);
+}
+
