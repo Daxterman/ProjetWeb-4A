@@ -61,9 +61,10 @@ iframe {
     visibility : hidden;
   }
 
-h1 {
+h1,h3,label,table {
     color:white;
     font-family: FlyingBird;
+    background-color: rgba(0,0,0,0);
 }
 
 .answer
@@ -75,6 +76,32 @@ h1 {
     margin-top: 15px;
     margin-bottom: 15px;
 }
+
+  table, #score
+  {
+    width: 50%;
+    font-size: 20;
+    border: 2px solid;
+    border-radius: 8px; /* Rayon de courbure pour arrondir les bords */
+    border-collapse: separate; /* Utiliser border-collapse: separate au lieu de border-collapse: collapse */
+    border-spacing: 0; 
+    display: table;
+    margin-left: auto; /* Centrer le tableau horizontalement */
+    margin-right: auto; /* Centrer le tableau horizontalement */
+
+  }
+
+  .contain-score
+  {
+    padding-top: 50px;
+  }
+  #score td,#score th, #score tr
+  {
+    padding: 16px 10px; /* Espacement vertical de 16px et espacement horizontal de 8px */
+    border: 2px solid;
+
+  }
+
 
 label
 {
@@ -92,6 +119,32 @@ label
     margin-right: 10px;
 }
 
+#ping, #fin
+{
+  display: none;
+}
+
+.popup {
+  position: fixed; /* Position fixe pour rester centrée */
+  top: 50%; /* Position à 50% du haut */
+  left: 50%; /* Position à 50% de la gauche */
+  transform: translate(-50%, -50%); /* Centrer le contenu */
+  background-color: rgba(102, 72, 100, 0.9);/* Couleur de fond de la div */
+  padding: 20px;
+  border-radius: 10px; /* Coins arrondis */
+  box-shadow: 0px 0px 15px 5px rgba(0, 0, 0, 0.3); /* Ombre portée */
+  z-index: 9999; /* Assurer que la div reste au-dessus */
+}
+
+.overlay {
+  position: fixed; /* Position fixe */
+  top: 0;
+  left: 0;
+  width: 100%; /* Largeur totale */
+  height: 100%; /* Hauteur totale */
+  background-color: rgba(0, 0, 0, 0.2); /* Couleur de fond assombrie */
+  z-index: 9998; /* Assurer que la div reste en dessous de la div centrée */
+}
 .pushable {
     position: relative;
     border: none;

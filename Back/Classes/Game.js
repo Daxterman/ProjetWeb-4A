@@ -31,7 +31,7 @@ class Game {
         })
         if(idx != -1)
         {
-            this.Players.splice(idx,idx)
+            this.Players.splice(idx,1)
         }
         
     }
@@ -66,6 +66,15 @@ class Game {
             return player.getPlayerPoints();
             
         }
+    }
+
+    getPlayerName(sessionID)
+    {
+        const player = this.Players.find(player => player.session === sessionID);
+        if (player) {
+            return player.name;
+            
+        }  
     }
 }
 

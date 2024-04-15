@@ -10,12 +10,16 @@ document.addEventListener('DOMContentLoaded',async function() {
     setCookie('sessionId', sessionId, 1); // Stocker pendant 1 jour
 }
       
-    const name = 'Mathieu'
+if(sessionStorage.getItem("name") === null)
+{
+  window.location.href = '/';
+}
+const name = sessionStorage.getItem("name")
 
     const buzzButton = document.getElementById("buzz");
     desactiverBouton(buzzButton);
     
-    const socket = io('http://localhost:3000');
+    const socket = io(':3000/');
 
     socket.on('connect', () => {
       console.log('Client connecté au server');
@@ -67,7 +71,26 @@ document.addEventListener('DOMContentLoaded',async function() {
       socket.emit('buzz' ,{ sessionId: sessionId});
 
     })
+
+
+    socket.on("score",data =>
+{
+  $('#score tbody').empty();
+  $.each(data, function(index, objet) {
+    const row = $('<tr>');
+
+    // Insérer le nom dans la première cellule
+    $('<td>').text(objet.name).appendTo(row);
+
+    // Insérer les points dans la deuxième cellule
+    $('<td>').text(objet.points.toString()).appendTo(row);
+
+    // Ajouter la ligne à tbody
+    row.appendTo('#score tbody');
+});})
 });
+
+
 
 function desactiverBouton(buzzButton) {
   disabled = true;
@@ -93,6 +116,8 @@ function setCookie(name, value, days) {
       expires = "; expires=" + date.toUTCString();
   }
   document.cookie = name + "=" + (value || "") + expires + "; path=/";
+  console.log(name + "=" + (value || "") + expires + "; path=/")
+  console.log(document.cookie)
 }
 
 // Fonction pour récupérer la valeur d'un cookie à partir de son nom

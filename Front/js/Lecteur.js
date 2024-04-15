@@ -4,6 +4,7 @@ var pause = true;
 var t_restant = 29;
 var f = null;
 var buzzClick = false;
+var score = null;
 
 
 document.addEventListener('DOMContentLoaded',async function() {
@@ -11,11 +12,14 @@ document.addEventListener('DOMContentLoaded',async function() {
   id = sessionStorage.getItem("Playlist");
   if(!id){id = id = "37i9dQZF1DWWl7MndYYxge";};
   
-  //res =  await fetch("https://85a81c60-e91e-40f4-8fc7-cbfdd752a5dd-00-3dztisbt7dygb.picard.replit.dev/"+id);
-  res =  await fetch("http://localhost:3000/"+id);
+  res =  await fetch("/api/"+id);
   tab =  await res.json();
+  if (tab[0] === null)
+  {
+    window.location.href = '/';
+  }
 
-  const socket = io('http://localhost:3000');
+  const socket = io(':3000/');
 
   window.onSpotifyIframeApiReady = (IFrameAPI) => {
     const element = document.getElementById('embed-iframe');
@@ -30,7 +34,7 @@ document.addEventListener('DOMContentLoaded',async function() {
           episode.addEventListener('click', () => {
             socket.emit('NextFromLecteur');
             episode.setAttribute("data-spotify-id","spotify:track:"+tab[i].id);
-            i = (i+1)%tab.length;
+            i = (i+1);//%tab.length;
             EmbedController.loadUri(episode.dataset.spotifyId);  
             t_restant = 29; 
             $('#progress').attr("style","width: " +0).attr('aria-valuenow', 0);
@@ -43,6 +47,7 @@ document.addEventListener('DOMContentLoaded',async function() {
             $(".answer").html("");
             pause=false;
             f=setInterval(interval,1000);
+            reveal();
           });
         });
         document.querySelectorAll('.pause').forEach(
@@ -76,6 +81,7 @@ document.addEventListener('DOMContentLoaded',async function() {
 
       document.getElementById('ajout2Points').addEventListener('click', () => {
         ajouterPoints(socket, 2);
+
     });
 
       };
@@ -90,8 +96,10 @@ document.addEventListener('DOMContentLoaded',async function() {
 
   // Écoute de l'événement 'PauseBuzzer' du serveur
   socket.on('PauseBuzzer', (data) => {
+  $('#buzzPlayer')[0].play();
   console.log('Received PauseBuzzer from the server');
-    
+  console.log("pseudo :" + data.PlayerName);
+  $("#pseudo").html(data.PlayerName);
   // Déclenche le clic sur le bouton "pause"
   const pauseButton = document.getElementById('pause');
   if (pauseButton) {
@@ -100,14 +108,13 @@ document.addEventListener('DOMContentLoaded',async function() {
   } else {
     console.error('Pause button not found');
   }
-
-  $("#ajout1Point").prop('disabled',false);
+  $(".ajout1Point").prop('disabled',false);
 
   if(data.pointsToAttributeToPlayer == 2)
   {
-    $("#ajout2Points").prop('disabled',false);
+    $(".ajout2Points").prop('disabled',false);
   }
-  
+  $("#ping").css("display",'block');
   
 
   });
@@ -117,6 +124,22 @@ document.addEventListener('DOMContentLoaded',async function() {
     $("#skip").click();
     });
 
+  socket.on("score",data =>
+{
+  $('#score tbody').empty();
+  score = data
+  $.each(data, function(index, objet) {
+    const row = $('<tr>');
+
+    // Insérer le nom dans la première cellule
+    $('<td>').text(objet.name).appendTo(row);
+
+    // Insérer les points dans la deuxième cellule
+    $('<td>').text(objet.points.toString()).appendTo(row);
+
+    // Ajouter la ligne à tbody
+    row.appendTo('#score tbody');
+});})
 
 
 $("#reveal").on("click",click => {
@@ -141,11 +164,26 @@ $("#skip").on("click",click => {
   $('#progress').attr("style","width: " +percent).attr('aria-valuenow', percent).html("<b>"+t_restant+"</b>");
   clearInterval(f);
   $('#progess').html("");
-  document.getElementById("pause").click();
+  if (!pause)
+  {
+    document.getElementById("pause").click();
+  }
   $("#pause").prop('disabled',true);
   $("#next").prop('disabled',false);
   reveal();
+  if (i == tab.length)
+  {
+    fin();  
+  }
 })
+
+$(".overlay").on("click",click => {
+  $("#ping").css("display",'none');
+  $("#fin").css("display",'none');
+
+
+})
+
 });
 
 function interval()
@@ -163,6 +201,10 @@ function interval()
       $("#pause").prop('disabled',true);
       $("#next").prop('disabled',false);
       reveal();
+      if (i == tab.length)
+      {
+        fin();  
+      }
     }
   }
 }
@@ -189,9 +231,50 @@ function refresh()
 
 function ajouterPoints(socket, nbpoints)
 {
+
   socket.emit('ajouterPoints', {nbpoints : nbpoints});
-  
   $("#ajout1Point").prop('disabled',true);
   $("#ajout2Points").prop('disabled',true);
+  $("#ping").css("display",'none');
+
   
 }
+
+function fin()
+{
+  $("#fin").css("display",'block');
+  $("#gagnant").html(score[0].name);
+  if (typeof confetti !== 'undefined') {
+    // Utilisez la fonction confetti()
+    launch();
+    $('#finalPlayer')[0].play();
+
+  } else {
+    console.error('La bibliothèque canvas-confetti n\'est pas chargée.');
+  }
+}
+
+function launch()
+{
+  var duration = 15 * 1000;
+var animationEnd = Date.now() + duration;
+var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+function randomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+var interval = setInterval(function() {
+  var timeLeft = animationEnd - Date.now();
+
+  if (timeLeft <= 0) {
+    return clearInterval(interval);
+  }
+
+  var particleCount = 50 * (timeLeft / duration);
+  // since particles fall down, start a bit higher than random
+  confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } });
+  confetti({ ...defaults, particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } });
+}, 250);
+}
+
