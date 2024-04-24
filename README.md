@@ -27,7 +27,7 @@
 
   
 
-Afin d'utiliser ce projet, il vous faudra créer un fichier .env dans le répertoire du projet contenant deux tokens : ClientID et SecretID. Vous obtiendrez ces tokens en créant une application sur le dashboard de Spotify: developer.spotify.com/dashboard
+Afin d'utiliser ce projet, il vous faudra créer un fichier .env dans le répertoire du projet contenant deux tokens : ClientID et SecretID. Vous obtiendrez ces tokens en créant une application sur le [dashboard de Spotify](developer.spotify.com/dashboard).
 
   
 
